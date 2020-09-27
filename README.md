@@ -5,9 +5,9 @@
 - PrimaryPanel
   - DayTimePanel
      - FarmPanel
+     - DayPanel
         + UpPanel
         + DownPanel
-     - DayPanel
   - NightTimePanel
 
 
