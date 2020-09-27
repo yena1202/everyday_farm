@@ -7,31 +7,35 @@ import java.awt.GridLayout;
 
 public class DayTimePanel extends JPanel {
 	
+	//declasration of listener object
+	public BtnListener btnL;
 	
-	public JPanel FarmPanel,DayPanel, upPanel, downPanel,StorePanel;
+	public JPanel FarmPanel, DayPanel, upPanel, downPanel;
+	
+	//FarmPanel elements
+	public JLabel lblLogo, lblHelpMessage;
+	public JButton btnStartSheep1, btnStartSheep2, btnStartSheep3;
+	
+	//upPanel elements
+	public int count=1;	//양과 소의 총 합계.
+	public int limit=3;//Max count 3에서 5,7,10단위로 커짐 
+	public int money=1000;
 	public JLabel lblcount,lblmoney,lbllimit;
 	public JLabel[] lblCage;
-	public JButton btn_farmer;
-	public JButton btn_buySheep, btn_buyCow, btn_buyRibbon, btn_buySunglass, btn_buyNecklace;
+	public JLabel lblfarmer, lblribbon, lblsunglass, lblnecklace;
 	public JLabel lblBackground;
-	public int count=1;	//양과 소의 총 합계.
-	public int limit=3;//Max count
-	public int money=10000;
-	public JButton btnSheep;
+	public JButton btn_buySheep, btn_buyCow, btn_buyRibbon, btn_buySunglass, btn_buyNecklace;
+	
+	//downPanel elements
+	public int type=0;	//SheepThread의 색깔 타입 저장 변수
+	public int temp;	//색깔타입 임시 저장 변수                      
 	public SheepThread[] st;
-	public BtnListener btnL;
-	public JLabel lbltest;
-	public int type=0;
-	public int i;
-	public int sheepType;
+	public SheepThread a;
 	
-	public JButton btnStartSheep1, btnStartSheep2, btnStartSheep3;
-	public JLabel lblLogo, lblHelpMessage;
 	
-	public int temp;	//sheep color
-	
-	//constructor
 	public DayTimePanel() {
+		st = new SheepThread[10];
+		
 		
 		//전체 화면 
 		setBackground(Color.black);
@@ -43,8 +47,10 @@ public class DayTimePanel extends JPanel {
 //#############################################
 //
 //					FarmPanel
+//		기본 양을 btnStartSheep을 통해 type 결정. 
 //
 //#############################################
+
 		FarmPanel = new JPanel();
 		FarmPanel.setBackground(Color.pink);
 		FarmPanel.setBounds(0,0,750,700);
@@ -57,11 +63,13 @@ public class DayTimePanel extends JPanel {
 		lblLogo.setBounds(50,50,650,200);
 		FarmPanel.add(lblLogo);
 		
+		//StartButton
 		btnStartSheep1 = new JButton(new ImageIcon("images/sheep1_red.png"));
 		btnStartSheep1.setBounds(25,400,200,190);
 		btnStartSheep1.setOpaque(false);
 		btnStartSheep1.setContentAreaFilled(false);
 		btnStartSheep1.setBorderPainted(false);
+		btnStartSheep1.addActionListener(btnL);
 		FarmPanel.add(btnStartSheep1);
 		
 		btnStartSheep2 = new JButton (new ImageIcon("images/sheep1_blue.png"));
@@ -69,6 +77,7 @@ public class DayTimePanel extends JPanel {
 		btnStartSheep2.setOpaque(false);
 		btnStartSheep2.setContentAreaFilled(false);
 		btnStartSheep2.setBorderPainted(false);
+		btnStartSheep2.addActionListener(btnL);
 		FarmPanel.add(btnStartSheep2);
 		
 		btnStartSheep3 = new JButton (new ImageIcon("images/sheep1_orange.png"));
@@ -76,6 +85,7 @@ public class DayTimePanel extends JPanel {
 		btnStartSheep3.setOpaque(false);
 		btnStartSheep3.setContentAreaFilled(false);
 		btnStartSheep3.setBorderPainted(false);
+		btnStartSheep3.addActionListener(btnL);
 		FarmPanel.add(btnStartSheep3);
 		
 		lblHelpMessage = new JLabel("Choose one to start game!");
@@ -83,14 +93,14 @@ public class DayTimePanel extends JPanel {
 		lblHelpMessage.setFont(new Font("Estrangelo Edessa",Font.BOLD,30));
 		FarmPanel.add(lblHelpMessage);
 		
-		btnStartSheep1.addActionListener(btnL);
-		btnStartSheep2.addActionListener(btnL);
-		btnStartSheep3.addActionListener(btnL);
+		
+	
 
 
 //#############################################
 //
-//					upPanel
+//					DayPanel
+//	 		upPanel과 downPanel을 합침 
 //
 //#############################################
 		
@@ -101,6 +111,11 @@ public class DayTimePanel extends JPanel {
 		DayPanel.setVisible(false);
         add(DayPanel);
 		
+//#############################################
+//
+//					upPanel
+//
+//#############################################
 
 		upPanel = new JPanel();
 		upPanel.setBackground(new Color(223,234,253));
@@ -134,18 +149,33 @@ public class DayTimePanel extends JPanel {
         lblmoney.setVerticalAlignment(SwingConstants.CENTER);
         upPanel.add(lblmoney);    
         
-        btn_farmer = new JButton(new ImageIcon("images/farmer.png"));//농부버튼 누르면 상점으로 이동
-        btn_farmer.setBounds(100,150,100,150);
-        btn_farmer.setFont(new Font("Arial", Font.PLAIN, 30));
-        btn_farmer.setOpaque(false);
-      	btn_farmer.setContentAreaFilled(false);
-        btn_farmer.setBorderPainted(false);
-        upPanel.add(btn_farmer);
+        //악세사리     
+        lblsunglass = new JLabel(new ImageIcon("images/lblsunglass.png"));
+        lblsunglass.setBounds(100,155,100,100);
+        lblsunglass.setVisible(false);
+        upPanel.add(lblsunglass);
+        
+        lblribbon = new JLabel(new ImageIcon("images/lblribbon.png"));
+        lblribbon.setBounds(100,120,100,100);
+        lblribbon.setVisible(false);
+        upPanel.add(lblribbon);
+        
+        lblnecklace = new JLabel(new ImageIcon("images/lblnecklace.png"));
+        lblnecklace.setBounds(100,195,100,100);
+        lblnecklace.setVisible(false);
+        upPanel.add(lblnecklace);
+        
+        //사용자 캐릭터 농부 
+        lblfarmer = new JLabel(new ImageIcon("images/farmer.png"));
+        lblfarmer.setBounds(100,150,100,150);
+        lblfarmer.setFont(new Font("Arial", Font.PLAIN, 30));
+        upPanel.add(lblfarmer);
         
         lblBackground = new JLabel(new ImageIcon("images/store.png"));
 		lblBackground.setBounds(280,100,400,200);
 		upPanel.add(lblBackground);
 		
+		//배경 이미지 아이콘   
 		ImageIcon[] image = new ImageIcon[5];
        	image[0] = new ImageIcon("images/cage1.png");
        	image[1] = new ImageIcon("images/cage2.png");
@@ -155,24 +185,25 @@ public class DayTimePanel extends JPanel {
 		
 		lblCage = new JLabel[5];
 		
-		for(i=0;i<5;i++){
+		for(int i=0;i<5;i++){
 			lblCage[i] = new JLabel("",image[i],SwingConstants.CENTER);
 			lblCage[i].setBounds(0,0,750,300);
 			lblCage[i].setVisible(false);
 			upPanel.add(lblCage[i]);
-			}
+		}
+			
 		lblCage[0].setVisible(true);
 		
-		//Button
-		btn_buySheep = new JButton("sheep 500");
+		//Store Button 
+		btn_buySheep = new JButton(new ImageIcon("images/sheepprice.png"));
 		btn_buySheep.setBounds(100,40,90,50);
 		btn_buySheep.addActionListener(btnL);
 		btn_buySheep.setBorderPainted(false);
 		btn_buySheep.setContentAreaFilled(false);
 		lblBackground.add(btn_buySheep);
 		
-		btn_buyCow = new JButton("cow 1000");
-		btn_buyCow.setBounds(200,40,90,50);
+		btn_buyCow = new JButton(new ImageIcon("images/cowprice.png"));
+		btn_buyCow.setBounds(210,40,100,50);
 		btn_buyCow.addActionListener(btnL);
 		btn_buyCow.setBorderPainted(false);
 		btn_buyCow.setContentAreaFilled(false);
@@ -198,60 +229,46 @@ public class DayTimePanel extends JPanel {
 		btn_buyNecklace.setBorderPainted(false);
 		btn_buyNecklace.setContentAreaFilled(false);
 		lblBackground.add(btn_buyNecklace);
-		//Label
-        
-        
-
-       	
-   	   
-
-       
-        
-        
-        
+		
+  
 //#############################################
 //
 //					downPanel
 //
+//				양과 소를 표시하는 패널 
 //#############################################  
 
 		downPanel = new JPanel();
 		downPanel.setBackground(new Color(167,232,102));
 		downPanel.setBounds(0,300,750,400);
 		downPanel.setVisible(true);
-		
 		DayPanel.add(downPanel);
 		
-		
-		color(getSheepType());
-		} //constructor
+		color(getSheepType());//처음 양 색깔 결정
+	} //constructor
 
 		
-		private class BtnListener implements ActionListener {
+	private class BtnListener implements ActionListener {
 			
-			public void actionPerformed(ActionEvent event) {
+		public void actionPerformed(ActionEvent event) {
 			
 			Object obj = event.getSource();
 			
-			//for(int i = 0;i<10;i++)			
-				//st[i].start();
+			//StartSheep버튼을 누를 경우 패널 전환이 일어나고 양 색깔 타입이 결정
+			
 			if ( obj == btnStartSheep1 )
 			{
 				FarmPanel.setVisible(false);
 				DayPanel.setVisible(true);
-			    myThreadStart();
 			    type = 1;
 			    temp = 1;
 				color(1);
 				st[count].setVisible(true);
 			}
-			
-			
 			else if ( obj == btnStartSheep2 )
 			{
 				FarmPanel.setVisible(false);
 				DayPanel.setVisible(true);
-				myThreadStart();
 				type = 2;
 				temp = 2;
 				color(2);
@@ -261,20 +278,21 @@ public class DayTimePanel extends JPanel {
 			{
 				FarmPanel.setVisible(false);
 				DayPanel.setVisible(true);
-				myThreadStart();
 				type = 3;
 				temp = 3;
 				color(3);
 				st[count].setVisible(true);
 			}
-						
+			
+			//buyObject 버튼 클릭시 소지금이 해당 금액이상이어만 구매가능
+			
+			//양 구매시 처음 선택한 색깔 타입의 양이 구매됨                       
 			if(obj == btn_buySheep)
 			{
-				System.out.println("buysheep");
 				if(money >= 500)
 				{
 					money-=500;
-					type = temp;
+					type = temp;//임시 변수에 저장된 색깔 타입을 가져옴 
 					color(type);
 					st[count].setVisible(true);
 					count++;
@@ -282,6 +300,7 @@ public class DayTimePanel extends JPanel {
 					lblmoney.setText(""+money);
 					lblcount.setText("Count : "+count);
 					
+					//일정 마리수 초과시 cage이미지를 업그레이드 
 					if(count == 3) 
 					{
 						limit = 5;
@@ -296,7 +315,6 @@ public class DayTimePanel extends JPanel {
 						lblCage[1].setVisible(false);
 						lblCage[2].setVisible(true);
 					}
-					
 					else if (count == 7 )
 					{
 						limit = 10;
@@ -307,13 +325,12 @@ public class DayTimePanel extends JPanel {
 					else if(count ==10){
 						lblCage[3].setVisible(false);
 						lblCage[4].setVisible(true);
-					}
-								
+					}			
 				}
 			}
+			//소 구매
 			else if(obj == btn_buyCow)
 			{
-				System.out.println("buycow");
 				if(money >= 1000)
 				{
 					money-=1000;
@@ -323,6 +340,8 @@ public class DayTimePanel extends JPanel {
 					count++;
 					lblmoney.setText(""+money);
 					lblcount.setText("Count : "+count);
+					
+					//일정 마리수 초과시 cage이미지를 업그레이드 
 					if(count == 3) 
 					{
 						limit = 5;
@@ -351,13 +370,15 @@ public class DayTimePanel extends JPanel {
 					}	
 				}
 			}
+			//농부에 적용 한번구매한 악세사리는 setEnable(false)로 재구매 불가 
 			else if(obj == btn_buyRibbon)
 			{
 				if(money >= 1500)
 				{
 					money -= 1500;
 					lblmoney.setText(""+money);
-					//setVisible 양
+					lblribbon.setVisible(true);
+					btn_buyRibbon.setEnabled(false);
 				}
 			}
 			else if(obj == btn_buySunglass)
@@ -366,7 +387,8 @@ public class DayTimePanel extends JPanel {
 				{
 					money -= 1000;
 					lblmoney.setText(""+money);
-					//setVisible 양
+					lblsunglass.setVisible(true);
+					btn_buySunglass.setEnabled(false);
 				}
 				
 			}
@@ -376,52 +398,62 @@ public class DayTimePanel extends JPanel {
 				{
 					money -= 2000;
 					lblmoney.setText(""+money);
-					//setVisible 양
+					lblnecklace.setVisible(true);
+					btn_buyNecklace.setEnabled(false);
 				}	
 			}
+			
+			for(int i=0; i<10; i++)
+			{
+			  	if(obj == st[i]) 
+			    {
+			    	money+=500;
+			    	lblmoney.setText(""+money);
+		    		st[i].reset();
+		    		st[i].start();	
+		 		}	
+		 	}
+		
 		}//actionPerformed
+	
 	}//BtnListener
 	
-	public void myThreadStart() {
-		System.out.println("test");
-	}
 	
+	//처음 양 색깔 타입을 반환하는 함수
 	public int getSheepType() {
 		
-		if(sheepType == 1) {
-			System.out.println("is 1");
+		if(type == 1) {
 			return 1;
 		}
-		else if(sheepType == 2) {
-			System.out.println("is 2");
+		else if(type == 2) {
 			return 2;
 		}
-		else if(sheepType ==3) {
-			System.out.println("is 3");
+		else if(type == 3) {
 			return 3;
 		}
-		else if(sheepType == 4)
+		else if(type == 4)
 		return 4;
 		else
 			return 0;
 			
 	}//getSheepType()
 	
+	//색깔 타입을 받아SheepThread를 통해 객체 생성 
 	public void color(int a) {
-		
-		st = new SheepThread[10];
+	
 		type = a;
-		System.out.println(type);
 			
-			st[count] = new SheepThread(2000,type);
-			st[count].addActionListener(btnL);
-			st[count].setVisible(false);
-			st[count].setOpaque(false);
-			st[count].setContentAreaFilled(false);
-			st[count].setBorderPainted(false);
-			st[count].start();
-			downPanel.add(st[count]);
-		//	st[0].setVisible(true);
+		st[count] = new SheepThread(2000,type);
+			
+		st[count].setVisible(false);
+		st[count].setOpaque(false);
+		st[count].setContentAreaFilled(false);
+		st[count].setBorderPainted(false);
+		st[count].start();
+		
+		st[count].addActionListener(btnL);
+		downPanel.add(st[count]);
+
 	}//color
 } //end
 		
